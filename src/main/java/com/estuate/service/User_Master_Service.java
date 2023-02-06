@@ -17,9 +17,15 @@ public class User_Master_Service implements User_Master_Service_Interface {
 	@Autowired
 	User_Master_Repository user_Master_Repository;
 	@Override
-	public User_Master addUser(User_Master usermaster) {
+	
+	
+	public User_Master addUser(User_Master usermaster)  {
 		User_Master addingUser=usermaster;
-		if ((user_Master_Repository.findByUserName(addingUser.getUserName())==null )){// user_Master_Repository.findbyemail(addingUser.getEmail())==null)){
+		if(user_Master_Repository.findByEmail(addingUser.getEmail()) != null){
+			throw new BusinessException("User_Master_Service-AddUser",
+					"Email Id  Already Exsists in DataBase ")	;
+		}
+		if ((user_Master_Repository.findByUserName(addingUser.getUserName())==null )){
 			
 			try { 
 				Date date=new Date();
@@ -35,9 +41,10 @@ public class User_Master_Service implements User_Master_Service_Interface {
 						"Something went wrong in service layer " + e.getMessage());
 			}
 		}
+		
 		else {
 			throw new BusinessException("User_Master_Service-AddUser",
-					"Email Id or UserName Already Exsists in DataBase ")	;
+					" UserName Already Exsists in DataBase ")	;
 		}
 		
 	}
@@ -45,7 +52,7 @@ public class User_Master_Service implements User_Master_Service_Interface {
 	@Override
 	public User_Master updateUser(Long id,User_Master usermaster) {
 		if(!user_Master_Repository.existsById(id)) {
-			throw new BusinessException("User_Master_Service-Modify Group By ID",
+			throw new BusinessException("User_Master_Service-Modify user ID",
 					" Group ID Not found in DataBase, Please enter valid ID");
 		}
 		User_Master existingUser=user_Master_Repository.findById(id).orElseThrow(()-> new BusinessException("User ID is not present in Database", "Please Enter valid ID"));
@@ -68,7 +75,7 @@ public class User_Master_Service implements User_Master_Service_Interface {
 		}
 		if (listallUsers.isEmpty()) {
 			throw new BusinessException("User_Master_Service-listOf_Users",
-					" List is Empty, Add Some Data in Register Page... ");
+					" List is Empty ");
 		}
 		return listallUsers;
 	}
